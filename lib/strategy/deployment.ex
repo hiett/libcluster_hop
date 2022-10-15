@@ -139,10 +139,10 @@ defmodule ClusterHop.Strategy.Deployment do
 
   defp get_local_node_ip() do
     {:ok, ips} = :inet.getif()
-    {ip} = List.first(ips)
+    {ip, _, _} = List.first(ips)
 
     # Currently, this is only ipv4. In the future, let's write some stuff to handle more cases.
-    Tuple.to_list(ips)
+    Tuple.to_list(ip)
     |> Enum.join(".")
   end
 

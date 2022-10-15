@@ -186,6 +186,7 @@ defmodule ClusterHop.Strategy.Deployment do
     ip = get_local_node_ip()
     nodename = make_nodename(ip, app_prefix)
 
+    Node.stop() # For some reason this sometimes auto starts
     {:ok, _pid} = Node.start(nodename)
   end
 end

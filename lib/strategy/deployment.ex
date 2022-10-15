@@ -32,6 +32,19 @@ defmodule ClusterHop.Strategy.Deployment do
     {:ok, load(state)}
   end
 
+  @impl GenServer
+  def handle_info(:timeout, state) do
+    handle_info(:load, state)
+  end
+
+  def handle_info(:load, %State{} = state) do
+    {:noreply, load(state)}
+  end
+
+  def handle_info(_, state) do
+    {:noreply, state}
+  end
+
   defp load(
          %State{
            topology: topology,

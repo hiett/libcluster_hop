@@ -7,4 +7,10 @@ defmodule ClusterHopTest do
 
     assert resp != {:error}
   end
+
+  test "ip to nodename conversion" do
+    resp = ClusterHop.Strategy.Deployment.ip_to_nodename(["192.168.1.233"], "test-app")
+
+    assert resp == [:"test-app@192.168.1.233"]
+  end
 end

@@ -106,7 +106,7 @@ defmodule ClusterHop.Strategy.Deployment do
 
     case ClusterHop.get_containers_in_deployment(deployment_id, hop_token) do
       {:ok, containers} ->
-        ips = containers |> Enum.map(&Map.get(&1, :ip)) |> ip_to_nodename(app_prefix)
+        ips = containers |> Enum.map(&Map.get(&1, :internal_ip)) |> ip_to_nodename(app_prefix)
         {:ok, MapSet.new(ips)}
 
       {:error} ->
@@ -114,8 +114,7 @@ defmodule ClusterHop.Strategy.Deployment do
     end
   end
 
-  defp ip_to_nodename(list, app_prefix) when is_list(list) do
-    list
-    |> Enum.map(&:"#{app_prefix}@#{&1}")
+  def ip_to_nodename(list, app_prefix) when is_list(list) do
+    list |> Enum.map(&:"#{app_prefix}@#{&1}")
   end
 end

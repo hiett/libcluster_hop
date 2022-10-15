@@ -141,12 +141,33 @@ defmodule ClusterHop.Strategy.Deployment do
     IO.inspect(:inet.getif())
     IO.inspect(:inet.getifaddrs())
 
-    {:ok, ips} = :inet.getif()
-    {ip, _, _} = List.first(ips)
+    case :inet.getif() do
+      {:ok, []} ->
+        # no ips found
+        # wait and recall
+        IO.puts("Waiting one second then trying again - couldn't find an IP")
+        :timer.sleep(1000)
+        get_local_node_ip()
 
-    # Currently, this is only ipv4. In the future, let's write some stuff to handle more cases.
-    Tuple.to_list(ip)
-    |> Enum.join(".")
+      {:ok, ips} ->
+        # find the ip that starts with 10.1 - this is the hop range
+        {ip, _, _} = List.first(ips)
+
+        # Currently, this is only ipv4. In the future, let's write some stuff to handle more cases.
+        string_ip =
+          Tuple.to_list(ip)
+          |> Enum.join(".")
+
+        IO.puts("Using IP #{string_ip}")
+
+        string_ip
+
+      _ ->
+        # something went wrong
+        IO.puts("Waiting one second then trying again - couldn't find an IP")
+        :timer.sleep(1000)
+        get_local_node_ip()
+    end
   end
 
   defp setup_local_nodename(%State{config: config}) do

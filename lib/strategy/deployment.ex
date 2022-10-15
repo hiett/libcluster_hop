@@ -138,6 +138,9 @@ defmodule ClusterHop.Strategy.Deployment do
   defp make_nodename(ip, app_prefix), do: :"#{app_prefix}@#{ip}"
 
   defp get_local_node_ip() do
+    IO.inspect(:inet.getif())
+    IO.inspect(:inet.getifaddrs())
+
     {:ok, ips} = :inet.getif()
     {ip, _, _} = List.first(ips)
 

@@ -42,6 +42,9 @@ defmodule ClusterHop.Strategy.Deployment do
        ) do
     case get_nodes(state) do
       {:ok, new_nodelist} ->
+        IO.puts("Got nodes:")
+        IO.inspect(new_nodelist)
+
         removed = MapSet.difference(state.meta, new_nodelist)
 
         new_nodelist =

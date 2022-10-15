@@ -150,17 +150,22 @@ defmodule ClusterHop.Strategy.Deployment do
         get_local_node_ip()
 
       {:ok, ips} ->
-        # find the ip that starts with 10.1 - this is the hop range
-        {ip, _, _} = List.first(ips)
+        case check_found_ip(ips) do
+          {:ok, ip} ->
+            string_ip =
+              Tuple.to_list(ip)
+              |> Enum.join(".")
 
-        # Currently, this is only ipv4. In the future, let's write some stuff to handle more cases.
-        string_ip =
-          Tuple.to_list(ip)
-          |> Enum.join(".")
+            IO.puts("Using IP #{string_ip}")
 
-        IO.puts("Using IP #{string_ip}")
+            string_ip
 
-        string_ip
+          _ ->
+            # something went wrong
+            IO.puts("Waiting one second then trying again - couldn't find an IP")
+            :timer.sleep(1000)
+            get_local_node_ip()
+        end
 
       _ ->
         # something went wrong
@@ -169,6 +174,12 @@ defmodule ClusterHop.Strategy.Deployment do
         get_local_node_ip()
     end
   end
+
+  defp check_found_ip([{{10, 1, a, b}, _, _} | rest]), do: {:ok, {10, 1, a, b}}
+
+  defp check_found_ip([head | rest]), do: check_found_ip(rest)
+
+  defp check_found_ip([]), do: {:error, :not_found}
 
   defp setup_local_nodename(%State{config: config}) do
     app_prefix = Keyword.get(config, :app_prefix, "app")

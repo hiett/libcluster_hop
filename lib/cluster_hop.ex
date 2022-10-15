@@ -5,7 +5,7 @@ defmodule ClusterHop do
   plug(Tesla.Middleware.JSON)
 
   def get_containers_in_deployment(deployment_id, token) when is_binary(deployment_id) do
-    case get("/ignite/deployments/" <> deployment_id <> "/containers",
+    case get("/ignite/deployments/#{deployment_id}/containers",
            headers: [{"authorization", token}]
          ) do
       {:ok, %{status: 200, body: body}} -> {:ok, extract_containers_from_response(body)}

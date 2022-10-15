@@ -97,7 +97,8 @@ defmodule ClusterHop.Strategy.Deployment do
 
   defp get_nodes(%State{config: config}) do
     app_prefix = Keyword.get(config, :app_prefix, "app")
-    deployment_id = Keyword.fetch!(config, :deployment_id)
+    env_var_deployment_id = System.get_env("DEPLOYMENT_ID")
+    deployment_id = Keyword.get(config, :deployment_id, env_var_deployment_id)
     hop_token = Keyword.fetch!(config, :hop_token)
 
     case ClusterHop.get_containers_in_deployment(deployment_id, hop_token) do

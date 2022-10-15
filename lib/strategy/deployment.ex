@@ -15,6 +15,8 @@ defmodule ClusterHop.Strategy.Deployment do
   def init([%State{} = state]) do
     state = state |> Map.put(:meta, MapSet.new())
 
+    setup_local_nodename(state)
+
     {:ok, load(state)}
   end
 
@@ -28,6 +30,8 @@ defmodule ClusterHop.Strategy.Deployment do
       config: Keyword.fetch!(opts, :config),
       meta: MapSet.new([])
     }
+
+    setup_local_nodename(state)
 
     {:ok, load(state)}
   end
@@ -128,6 +132,25 @@ defmodule ClusterHop.Strategy.Deployment do
   end
 
   def ip_to_nodename(list, app_prefix) when is_list(list) do
-    list |> Enum.map(&:"#{app_prefix}@#{&1}")
+    list |> Enum.map(&make_nodename(&1, app_prefix))
+  end
+
+  defp make_nodename(ip, app_prefix), do: :"#{app_prefix}@#{ip}"
+
+  defp get_local_node_ip() do
+    {:ok, ips} = :inet.getif()
+    {ip} = List.first(ips)
+
+    # Currently, this is only ipv4. In the future, let's write some stuff to handle more cases.
+    Tuple.to_list(ips)
+    |> Enum.join(".")
+  end
+
+  defp setup_local_nodename(%State{config: config}) do
+    app_prefix = Keyword.get(config, :app_prefix, "app")
+    ip = get_local_node_ip()
+    nodename = make_nodename(ip, app_prefix)
+
+    {:ok, _pid} = Node.start(nodename)
   end
 end

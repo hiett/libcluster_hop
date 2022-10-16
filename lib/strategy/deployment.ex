@@ -36,7 +36,6 @@ defmodule ClusterHop.Strategy.Deployment do
     {:ok, load(state)}
   end
 
-  @impl GenServer
   def handle_info(:timeout, state) do
     handle_info(:load, state)
   end
@@ -139,34 +138,29 @@ defmodule ClusterHop.Strategy.Deployment do
       {:ok, []} ->
         # no ips found
         # wait and recall
-        IO.puts("Waiting one second then trying again - couldn't find an IP")
-        :timer.sleep(1000)
-        get_local_node_ip()
+        handle_ip_failure()
 
       {:ok, ips} ->
         case check_found_ip(ips) do
           {:ok, ip} ->
-            string_ip =
-              Tuple.to_list(ip)
-              |> Enum.join(".")
-
-            IO.puts("Using IP #{string_ip}")
-
-            string_ip
+            Tuple.to_list(ip)
+            |> Enum.join(".")
 
           _ ->
             # something went wrong
-            IO.puts("Waiting one second then trying again - couldn't find an IP")
-            :timer.sleep(1000)
-            get_local_node_ip()
+            handle_ip_failure()
         end
 
       _ ->
         # something went wrong
-        IO.puts("Waiting one second then trying again - couldn't find an IP")
-        :timer.sleep(1000)
-        get_local_node_ip()
+        handle_ip_failure()
     end
+  end
+
+  defp handle_ip_failure() do
+    IO.puts("Waiting one second then trying again - couldn't find an IP")
+    :timer.sleep(1000)
+    get_local_node_ip()
   end
 
   defp check_found_ip([{{10, 1, a, b}, _, _} | rest]), do: {:ok, {10, 1, a, b}}

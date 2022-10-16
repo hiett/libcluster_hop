@@ -11,7 +11,6 @@ defmodule ClusterHop.Strategy.Deployment do
   end
 
   # libcluster ~> 3.0
-  @impl GenServer
   def init([%State{} = state]) do
     state = state |> Map.put(:meta, MapSet.new())
 

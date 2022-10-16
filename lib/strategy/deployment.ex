@@ -59,9 +59,6 @@ defmodule ClusterHop.Strategy.Deployment do
        ) do
     case get_nodes(state) do
       {:ok, new_nodelist} ->
-        IO.puts("Got nodes:")
-        IO.inspect(new_nodelist)
-
         removed = MapSet.difference(state.meta, new_nodelist)
 
         new_nodelist =
@@ -138,9 +135,6 @@ defmodule ClusterHop.Strategy.Deployment do
   defp make_nodename(ip, app_prefix), do: :"#{app_prefix}@#{ip}"
 
   defp get_local_node_ip() do
-    IO.inspect(:inet.getif())
-    IO.inspect(:inet.getifaddrs())
-
     case :inet.getif() do
       {:ok, []} ->
         # no ips found

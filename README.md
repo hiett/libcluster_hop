@@ -15,7 +15,7 @@ defp deps do
       # ... your other deps
       {:libcluster, "~> 3.3"},
       {:libcluster_hop,
-       github: "hiett/libcluster_hop", ref: "cbcd781ccc411e19435816014e89fa3ba1fa0adb"} # (this is current stable ref)
+       github: "hiett/libcluster_hop", ref: "6d9e519c4eb22c58c6f171dc9a739331a2a1194c"} # (this is current stable ref)
     ]
 end
 ```

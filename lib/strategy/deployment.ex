@@ -183,7 +183,7 @@ defmodule ClusterHop.Strategy.Deployment do
 
   defp setup_local_nodename(%State{config: config}) do
     # First we need to enable epmd
-    _ = :os.cmd("epmd -daemon") # Start up epmd manually
+    _ = :os.cmd('epmd -daemon') # Start up epmd manually
 
     # Wait a sec to ensure its started
     :timer.sleep(1000)

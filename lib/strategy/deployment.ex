@@ -169,6 +169,11 @@ defmodule ClusterHop.Strategy.Deployment do
   defp check_found_ip([]), do: {:error, :not_found}
 
   defp setup_local_nodename(%State{config: config}) do
+    IO.puts("Libcluster Hop starting up -- Local environment info to be printed:")
+    IO.puts("Internal IP: #{System.get_env("INTERNAL_IP")}")
+    IO.puts("Deployment ID: #{System.get_env("DEPLOYMENT_ID")}")
+    IO.puts("End of Libcluster Hop debugs")
+
     # First we need to enable epmd
     # Start up epmd manually
     _ = :os.cmd('epmd -daemon')

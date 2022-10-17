@@ -15,7 +15,7 @@ defp deps do
       # ... your other deps
       {:libcluster, "~> 3.3"},
       {:libcluster_hop,
-       github: "hiett/libcluster_hop", ref: "6d9e519c4eb22c58c6f171dc9a739331a2a1194c"} # (this is current stable ref)
+       github: "hiett/libcluster_hop", ref: "6e3a00d2e8e8ea0388135d8c000b999536021909"} # (this is current stable ref)
     ]
 end
 ```
@@ -25,11 +25,7 @@ Create a project token with manage deployments permissions.
 
 This token is used to get all the containers in a deployment from the Hop API.
 
-### 2. Create / Get a Deployment ID
-This will start with deployment_
-
-
-### 3. Setup the strategy in your Application file
+### 2. Setup the strategy in your Application file
 
 Here's an example of what a barebones Application file would look like:
 ```elixir
@@ -43,9 +39,8 @@ defmodule HopTestapp do
       hop: [
         strategy: ClusterHop.Strategy.Deployment,
         config: [
-          deployment_id: "deployment_xxx",
           hop_token: "ptk_xxx",
-          app_prefix: "my_amazing_app"
+          app_prefix: "my_amazing_app" # Optional, defaults to "app"
         ]
       ]
     ]
@@ -61,11 +56,11 @@ defmodule HopTestapp do
 end
 
 ```
-Fill in the `deployment_id`, `hop_token` and `app_prefix`.
+Fill in the `hop_token` and optionally `app_prefix`.
 Libcluster Hop will automatically find the internal container IP (starts with 10.1.x.x), and form a nodename in the
 following format: `app_prefix@internal_ip`
 
-### 4. [Important!] Set the following Environment Variable in your Hop deployment:
+### 3. [Important!] Set the following Environment Variable in your Hop deployment:
 `RELEASE_DISTRIBUTION=none`
 
 You need to set this because Elixir will automatically attempt to start the application in distributed mode upon
@@ -74,5 +69,5 @@ to containers on Hop.
 
 Libcluster Hop will start the node itself when it has obtained the IP and formed a nodename.
 
-### 5. Scale away!
+### 4. Scale away!
 You're all good to go. All containers inside a deployment will now be linked together.

@@ -133,26 +133,35 @@ defmodule ClusterHop.Strategy.Deployment do
   defp make_nodename(ip, app_prefix), do: :"#{app_prefix}@#{ip}"
 
   defp get_local_node_ip() do
-    case :inet.getif() do
-      {:ok, []} ->
-        # no ips found
-        # wait and recall
-        handle_ip_failure()
+    # Hop now sends the node ip as an env var, so we can check that
+    hop_env_ip = System.get_env("INTERNAL_IP")
+    case hop_env_ip do
+      nil ->
+        # Not defined
+        case :inet.getif() do
+          {:ok, []} ->
+            # no ips found
+            # wait and recall
+            handle_ip_failure()
 
-      {:ok, ips} ->
-        case check_found_ip(ips) do
-          {:ok, ip} ->
-            Tuple.to_list(ip)
-            |> Enum.join(".")
+          {:ok, ips} ->
+            case check_found_ip(ips) do
+              {:ok, ip} ->
+                Tuple.to_list(ip)
+                |> Enum.join(".")
+
+              _ ->
+                # something went wrong
+                handle_ip_failure()
+            end
 
           _ ->
             # something went wrong
             handle_ip_failure()
         end
-
-      _ ->
-        # something went wrong
-        handle_ip_failure()
+      ip ->
+        IO.puts("Using Hop env var provided IP.")
+        ip
     end
   end
 
@@ -172,7 +181,7 @@ defmodule ClusterHop.Strategy.Deployment do
     IO.puts("Libcluster Hop starting up -- Local environment info to be printed:")
     IO.puts("Internal IP: #{System.get_env("INTERNAL_IP")}")
     IO.puts("Deployment ID: #{System.get_env("DEPLOYMENT_ID")}")
-    IO.puts("End of Libcluster Hop debugs")
+    IO.puts("End of Libcluster Hop logs")
 
     # First we need to enable epmd
     # Start up epmd manually
